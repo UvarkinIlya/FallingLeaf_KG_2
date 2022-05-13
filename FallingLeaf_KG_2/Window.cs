@@ -54,8 +54,8 @@ namespace LearnOpenTK {
         protected override void OnLoad() {
             base.OnLoad();
 
-            //GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            //GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
             // We enable depth testing here. If you try to draw something more complex than one plane without this,
             // you'll notice that polygons further in the background will occasionally be drawn over the top of the ones in the foreground.
@@ -76,6 +76,9 @@ namespace LearnOpenTK {
             // shader.vert has been modified. Take a look at it after the explanation in OnRenderFrame.
             _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             _shader.Use();
+
+            //_lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
+            //_lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
 
             var vertexLocation = _shader.GetAttribLocation("aPosition");
             GL.EnableVertexAttribArray(vertexLocation);

@@ -9,6 +9,8 @@ namespace LearnOpenTK {
         public readonly int Handle;
 
         public static Texture LoadFromFile(string path) {
+            //GL.Enable(EnableCap.Blend);
+            //GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             // Generate handle
             int handle = GL.GenTexture();
 
