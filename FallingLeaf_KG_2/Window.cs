@@ -49,6 +49,7 @@ namespace LearnOpenTK {
 
         public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings) {
+            VSync = VSyncMode.On;
         }
 
         protected override void OnLoad() {
@@ -61,6 +62,7 @@ namespace LearnOpenTK {
             // you'll notice that polygons further in the background will occasionally be drawn over the top of the ones in the foreground.
             // Obviously, we don't want this, so we enable depth testing. We also clear the depth buffer in GL.Clear over in OnRenderFrame.
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
 
             _vertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(_vertexArrayObject);
@@ -121,6 +123,7 @@ namespace LearnOpenTK {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.BindVertexArray(_vertexArrayObject);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             _texture.Use(TextureUnit.Texture0);
             //_texture2.Use(TextureUnit.Texture1);
@@ -157,6 +160,10 @@ namespace LearnOpenTK {
             if (input.IsKeyDown(Keys.Escape)) {
                 Close();
             }
+
+#if DEBUG
+            Title = $"Falling Leaf | FPS: {1f / e.Time}";
+#endif
         }
 
         protected override void OnResize(ResizeEventArgs e) {
