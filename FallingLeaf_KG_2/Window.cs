@@ -32,6 +32,8 @@ namespace LearnOpenTK {
 
         private Shader _shader;
 
+        private Shader _lightingShader; //Шeйдер для света
+
         private Texture _texture;
 
         //private Texture _texture2;
@@ -76,19 +78,21 @@ namespace LearnOpenTK {
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
 
             // shader.vert has been modified. Take a look at it after the explanation in OnRenderFrame.
-            _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-            _shader.Use();
+            _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
+
+            //_shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+            _lightingShader.Use();
 
             //_lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
             //_lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
 
-            var vertexLocation = _shader.GetAttribLocation("aPosition");
+            var vertexLocation = _lightingShader.GetAttribLocation("aPosition");
             GL.EnableVertexAttribArray(vertexLocation);
             GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
 
-            var texCoordLocation = _shader.GetAttribLocation("aTexCoord");
+            var texCoordLocation = _lightingShader.GetAttribLocation("aTexCoord");
             GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            GL.VertexAttribPointer(texCoordLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
             _texture = Texture.LoadFromFile("Resources/leaf2.png");
             _texture.Use(TextureUnit.Texture0);
@@ -96,7 +100,7 @@ namespace LearnOpenTK {
             //_texture2 = Texture.LoadFromFile("Resources/awesomeface.png");
             //_texture2.Use(TextureUnit.Texture1);
 
-            _shader.SetInt("texture0", 0);
+            _lightingShader.SetInt("texture0", 0);//расскоментить
             //_shader.SetInt("texture1", 1);
 
             // For the view, we don't do too much here. Next tutorial will be all about a Camera class that will make it much easier to manipulate the view.
@@ -127,7 +131,7 @@ namespace LearnOpenTK {
 
             _texture.Use(TextureUnit.Texture0);
             //_texture2.Use(TextureUnit.Texture1);
-            _shader.Use();
+            /*_shader.Use();
 
             // Finally, we have the model matrix. This determines the position of the model.
             var model = Matrix4.Identity * 
@@ -146,6 +150,22 @@ namespace LearnOpenTK {
             _shader.SetMatrix4("model", model);
             _shader.SetMatrix4("view", _view);
             _shader.SetMatrix4("projection", _projection);
+
+            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);*/
+
+            _lightingShader.Use();
+
+            var model = Matrix4.Identity *
+                Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_time)) *
+                Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_time)) * Matrix4.CreateTranslation(0.0f, -0.005f * (float)_time, 0.0f);
+
+            // Matrix4.Identity is used as the matrix, since we just want to draw it at 0, 0, 0
+            _lightingShader.SetMatrix4("model", model);
+            _lightingShader.SetMatrix4("view", _view);
+            _lightingShader.SetMatrix4("projection", _projection);
+
+            _lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
+            _lightingShader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
 
             GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
 
